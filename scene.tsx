@@ -13,42 +13,49 @@ export interface IState {
 export default class garden extends DCL.ScriptableScene<any, IState> {
   // This is your initial state and it respects the given IState interface
   state = {
-    birdPos: [{x:0, y:1, z:0},{x:1, y:1, z:0}],
-    birdState: [null, null],
+    birdPos: [{x:0, y:1, z:0}],
+    birdState: [null],
   }
 
   sceneDidMount() {
-    this.eventSubscriber.on('door_click', () => {
-  
+    this.eventSubscriber.on('tree_click', () => {
+      this.createBird();
+      console.log("new bird");
     })
-   this.updateBird(0);
-   this.updateBird(1);
+   //this.updateBird(0);
   }
 
-  async updateBird(bird: number=0)
+  setUpdateBird(bird: number)
   {
     setInterval(() => {
-      this.setState({birdPos: this.newBirdPos(bird)});
-      this.setState({birdState: this.newBirdState(bird)});
+      this.newBirdPos(bird);
+      this.newBirdState(bird);
     }, 4000);
   }
 
+  createBird()
+  {
+    const bird = this.state.birdPos.length;
+    if (bird > 10) {return};
+    this.setState({birdPos:  [ ...this.state.birdPos, {x:0, y:1, z:0} ]});
+    this.setState({birdState: [ ...this.state.birdState, null] });
+    this.setUpdateBird(bird);
+    this.newBirdPos(bird);  // to avoid having to wait a full cycle to see it
+  }
 
-  newBirdPos(bird: number=0)
+  newBirdPos(bird: number)
   {
     let newPos : Vector3Component[] = this.state.birdPos;
     newPos[bird].x = (Math.random() *10 )- 5;
     newPos[bird].z = (Math.random() *10 )- 5;  
-    newPos[bird].y = Math.random() *2 + 1;
-    
-    return newPos;
+    newPos[bird].y = Math.random() *2 + 1;  
+    this.setState({birdPos: newPos});
   }
 
-  newBirdState(bird: number=0)
+  newBirdState(bird: number)
   {
     let newState : BirdState[] = this.state.birdState;
     const stateNow = Math.random();
-    console.log(stateNow);
     if (stateNow < 0.6){ 
       newState[bird] = null 
     } else if (stateNow < 0.8) {
@@ -56,7 +63,7 @@ export default class garden extends DCL.ScriptableScene<any, IState> {
     } else {
       newState[bird] =  'shake'
     }
-    return newState;
+    this.setState({birdState: newState});
   }
 
   renderBirds()
@@ -77,26 +84,22 @@ export default class garden extends DCL.ScriptableScene<any, IState> {
             { clip: "Armature_look" , playing:
             this.state.birdState[birdNum] == 'looking'?true:false },
             { clip: "Armature_shake" , playing: this.state.birdState[birdNum] == 'shake'}
-          ] 
-          
+          ]          
       }
     />
-
-  )
+    )
   }
 
 
 
   async render() {
-
-
     return (
       <scene position={{ x: 5, y: 0, z: 5 }}>
         {this.renderBirds()}
 
         <gltf-model
           src="models/apple tree.gltf"
-          scale={0.25}
+          scale={0.2}
           id="tree"
          />
       </scene>
