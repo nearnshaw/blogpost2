@@ -24,6 +24,8 @@ export default class garden extends DCL.ScriptableScene<any, IState> {
       this.createBird();
       console.log("new bird");
       this.setState({treePulse : true});
+      //delay 100 or something
+      this.setState({treePulse : false});     
       
     })
    //this.updateBird(0);
@@ -32,8 +34,8 @@ export default class garden extends DCL.ScriptableScene<any, IState> {
   setUpdateBird(bird: number)
   {
     setInterval(() => {
-      this.newBirdPos(bird);
-      this.newBirdState(bird);
+      this.newBirdPos(bird -1);
+      this.newBirdState(bird -1);
     }, 4000);
   }
 
