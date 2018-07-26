@@ -80,10 +80,10 @@ export default class garden extends DCL.ScriptableScene<any, IState> {
       }}
       skeletalAnimation={
         [
-            { clip: "Armature_fly" , loop:true, playing:true },
-            { clip: "Armature_look" , playing:
+            { clip: "Bird_fly" , loop:true, playing:true },
+            { clip: "Bird_look" , playing:
             this.state.birdState[birdNum] == 'looking'?true:false },
-            { clip: "Armature_shake" , playing: this.state.birdState[birdNum] == 'shake'}
+            { clip: "Bird_shake" , playing: this.state.birdState[birdNum] == 'shake'}
           ]          
       }
     />
@@ -102,6 +102,7 @@ export default class garden extends DCL.ScriptableScene<any, IState> {
           scale={0.2}
           id="tree"
          />
+
       </scene>
     )
   }
