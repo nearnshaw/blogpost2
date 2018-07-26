@@ -25,7 +25,7 @@ export default class garden extends DCL.ScriptableScene<any, IState> {
    //this.updateBird(0);
   }
 
-  setUpdateBird(bird: number)
+  async setUpdateBird(bird: number)
   {
     setInterval(() => {
       this.newBirdPos(bird);
@@ -45,25 +45,34 @@ export default class garden extends DCL.ScriptableScene<any, IState> {
 
   newBirdPos(bird: number)
   {
-    let newPos : Vector3Component[] = this.state.birdPos;
-    newPos[bird].x = (Math.random() *10 )- 5;
-    newPos[bird].z = (Math.random() *10 )- 5;  
-    newPos[bird].y = Math.random() *2 + 1;  
-    this.setState({birdPos: newPos});
+    const newPos = {
+      x: (Math.random() *10 )- 5,
+      y:  Math.random() *2 + 1,
+      z: (Math.random() *10 )- 5  
+    }  
+    this.setState({birdPos: [
+      ...this.state.birdPos.slice(0, bird),
+      newPos,
+      ...this.state.birdPos.slice(bird + 1),
+    ]});
   }
 
   newBirdState(bird: number)
   {
-    let newState : BirdState[] = this.state.birdState;
+    let newState : BirdState;
     const stateNow = Math.random();
-    if (stateNow < 0.6){ 
-      newState[bird] = null 
-    } else if (stateNow < 0.8) {
-      newState[bird] =  'looking'
+    if (stateNow < 0.4){ 
+      newState = null 
+    } else if (stateNow < 0.7) {
+      newState =  'looking'
     } else {
-      newState[bird] =  'shake'
+      newState =  'shake'
     }
-    this.setState({birdState: newState});
+    this.setState({birdState: [
+      ...this.state.birdState.slice(0, bird),
+      newState,
+      ...this.state.birdState.slice(bird + 1),
+    ]});
   }
 
   renderBirds()
