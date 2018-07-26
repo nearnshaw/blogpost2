@@ -8,24 +8,28 @@ export type BirdState = null | 'looking' | 'shake';
 export interface IState {
   birdPos: Vector3Component[],
   birdState: BirdState[],
+  treePulse: Boolean,
 }
 
 export default class garden extends DCL.ScriptableScene<any, IState> {
   // This is your initial state and it respects the given IState interface
   state = {
-    birdPos: [{x:0, y:1, z:0}],
-    birdState: [null],
+    birdPos: [{x:0, y:1.5, z:3},],
+    birdState: [null,],
+    treePulse: false,
   }
 
   sceneDidMount() {
     this.eventSubscriber.on('tree_click', () => {
       this.createBird();
       console.log("new bird");
+      this.setState({treePulse : true});
+      
     })
    //this.updateBird(0);
   }
 
-  async setUpdateBird(bird: number)
+  setUpdateBird(bird: number)
   {
     setInterval(() => {
       this.newBirdPos(bird);
@@ -37,13 +41,13 @@ export default class garden extends DCL.ScriptableScene<any, IState> {
   {
     const bird = this.state.birdPos.length;
     if (bird > 10) {return};
-    this.setState({birdPos:  [ ...this.state.birdPos, {x:0, y:1, z:0} ]});
+    this.setState({birdPos:  [ ...this.state.birdPos, {x:0, y:1.5, z:3} ]});
     this.setState({birdState: [ ...this.state.birdState, null] });
     this.setUpdateBird(bird);
     this.newBirdPos(bird);  // to avoid having to wait a full cycle to see it
   }
 
-  newBirdPos(bird: number)
+  async newBirdPos(bird: number)
   {
     const newPos = {
       x: (Math.random() *10 )- 5,
@@ -107,10 +111,18 @@ export default class garden extends DCL.ScriptableScene<any, IState> {
         {this.renderBirds()}
 
         <gltf-model
-          src="models/apple tree.gltf"
-          scale={0.2}
-          id="tree"
+          src="models/Ground.gltf"
          />
+
+        <gltf-model
+          src="models/Tree.gltf"
+          id="tree"          
+          skeletalAnimation={
+            [
+                { clip: "Armature_ArmatureAction" , loop:true, playing: this.state.treePulse? true : false },]
+            }
+         />
+
 
       </scene>
     )
