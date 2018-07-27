@@ -4,6 +4,11 @@ import {Vector3Component} from 'metaverse-api'
 
 export type BirdState = null | 'looking' | 'shake';
 
+
+export function sleep(ms: number = 0) {
+  return new Promise(r => setTimeout(r, ms));
+}
+
 // This is an interface, you can use it to enforce the types of your state
 export interface IState {
   birdPos: Vector3Component[],
@@ -14,42 +19,53 @@ export interface IState {
 export default class garden extends DCL.ScriptableScene<any, IState> {
   // This is your initial state and it respects the given IState interface
   state = {
-    birdPos: [{x:0, y:1.5, z:3},],
-    birdState: [null,],
+    birdPos: [],
+    birdState: [],
     treePulse: false,
   }
 
   sceneDidMount() {
     this.eventSubscriber.on('tree_click', () => {
-      this.createBird();
+      const bird = this.state.birdPos.length;
+      if (bird > 10) {return};
       console.log("new bird");
-      this.setState({treePulse : true});
-      //delay 100 or something
-      this.setState({treePulse : false});     
-      
+      this.shakeTree();
+      this.createBird(bird);      
     })
-   //this.updateBird(0);
+
   }
 
-  setUpdateBird(bird: number)
+  async shakeTree()
   {
+    this.setState({treePulse : true});
+    console.log(this.state.treePulse);
+    //await sleep(300);
+    //this.setState({treePulse : false});
+    //setTimeout( this.setState({treePulse : false}),
+    //300);
+    
+    setTimeout( f => {
+      this.setState({treePulse : false})
+      }, 
+      300
+    );   
+  }
+
+
+  async createBird(bird: number)
+  {
+    this.setState({birdPos:  [ ...this.state.birdPos, {x:-1, y:1.5, z:3} ]});
+    this.setState({birdState: [ ...this.state.birdState, null] });
+    //await sleep(200);
     setInterval(() => {
-      this.newBirdPos(bird -1);
-      this.newBirdState(bird -1);
+      this.newBirdPos(bird );
+      this.newBirdState(bird );
     }, 4000);
   }
 
-  createBird()
-  {
-    const bird = this.state.birdPos.length;
-    if (bird > 10) {return};
-    this.setState({birdPos:  [ ...this.state.birdPos, {x:0, y:1.5, z:3} ]});
-    this.setState({birdState: [ ...this.state.birdState, null] });
-    this.setUpdateBird(bird);
-    this.newBirdPos(bird);  // to avoid having to wait a full cycle to see it
-  }
 
-  async newBirdPos(bird: number)
+
+  newBirdPos(bird: number)
   {
     const newPos = {
       x: (Math.random() *10 )- 5,
