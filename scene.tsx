@@ -5,9 +5,9 @@ import {Vector3Component} from 'metaverse-api'
 export type BirdState = null | 'looking' | 'shake';
 
 
-export function sleep(ms: number = 0) {
-  return new Promise(r => setTimeout(r, ms));
-}
+//export function sleep(ms: number = 0) {
+//  return new Promise(r => setTimeout(r, ms));
+//}
 
 // This is an interface, you can use it to enforce the types of your state
 export interface IState {
@@ -37,13 +37,7 @@ export default class garden extends DCL.ScriptableScene<any, IState> {
 
   async shakeTree()
   {
-    this.setState({treePulse : true});
-    console.log(this.state.treePulse);
-    //await sleep(300);
-    //this.setState({treePulse : false});
-    //setTimeout( this.setState({treePulse : false}),
-    //300);
-    
+    this.setState({treePulse : true});   
     setTimeout( f => {
       this.setState({treePulse : false})
       }, 
@@ -54,13 +48,19 @@ export default class garden extends DCL.ScriptableScene<any, IState> {
 
   async createBird(bird: number)
   {
-    this.setState({birdPos:  [ ...this.state.birdPos, {x:-1, y:1.5, z:3} ]});
-    this.setState({birdState: [ ...this.state.birdState, null] });
-    //await sleep(200);
+    this.setState({birdPos:  [ ...this.state.birdPos, {x:-1, y:1.5, z:3} ]})
+    this.setState({birdState: [ ...this.state.birdState, null] })
+    // setTimeout( f => {
+       this.newBirdPos(bird )
+    //   },
+    //   300
+    // );    
     setInterval(() => {
-      this.newBirdPos(bird );
-      this.newBirdState(bird );
-    }, 4000);
+      this.newBirdPos(bird )
+      this.newBirdState(bird )
+    }, 
+    3000 + (Math.random() * 2000 ))
+
   }
 
 
